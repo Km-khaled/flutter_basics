@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/expense.dart';
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({super.key});
+  final void Function(Expense) addExpense;
+  const NewExpense({super.key, required this.addExpense});
 
   @override
   State<NewExpense> createState() => _NewExpenseState();
@@ -38,6 +39,42 @@ class _NewExpenseState extends State<NewExpense> {
     super.dispose();
   }
 
+  void submitExpenseData() {
+    final enteredAmount = double.tryParse(_enteredAmount.text);
+    final isInvalideAmount = (enteredAmount == null) || enteredAmount <= 0;
+
+    if (_enteredTitle.text.trim().isEmpty ||
+        isInvalideAmount == true ||
+        _selectedDate == null) {
+      showDialog(
+        context: context,
+        builder:
+            (ctx) => AlertDialog(
+              title: const Text("Invalid Input"),
+              content: const Text(
+                'Please make sure a valid title, amount, date and category was entered. ',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text("Okay"),
+                ),
+              ],
+            ),
+      );
+      return;
+    } else {
+      final newExpense = Expense(
+        title: _enteredTitle.text,
+        amount: enteredAmount!,
+        date: _selectedDate!,
+        category: _pickedcategory,
+      );
+      widget.addExpense(newExpense);
+      Navigator.pop(context);
+    }
+  }
+
   // var _enteredTitle= '';
 
   // _saveTitleInput(String inputValue){
@@ -47,7 +84,7 @@ class _NewExpenseState extends State<NewExpense> {
   @override
   Widget build(context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.max,
@@ -61,19 +98,22 @@ class _NewExpenseState extends State<NewExpense> {
           SizedBox(height: 5),
           Row(
             children: [
-              Expanded(  // Wrap TextField in Expanded to give it a constrained width
+              Expanded(
+                // Wrap TextField in Expanded to give it a constrained width
                 child: TextField(
                   controller: _enteredAmount,
                   decoration: InputDecoration(
-                    prefixText: "DZD",
+                    prefixText: "DZD ",
                     labelText: "Amount",
                   ),
                   keyboardType: TextInputType.number,
                 ),
               ),
 
-              SizedBox(width: 16), // Add some spacing between amount field and date display
-              
+              SizedBox(
+                width: 16,
+              ), // Add some spacing between amount field and date display
+
               Row(
                 children: [
                   Text(
@@ -117,8 +157,11 @@ class _NewExpenseState extends State<NewExpense> {
                 onPressed: () => {Navigator.pop(context)},
                 child: Text("Cancel"),
               ),
-              
-              ElevatedButton(onPressed: () {}, child: const Text("Save Expense")),
+
+              ElevatedButton(
+                onPressed: submitExpenseData,
+                child: const Text("Save Expense"),
+              ),
             ],
           ),
         ],
