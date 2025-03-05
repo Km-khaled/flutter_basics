@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-
 const uuid = Uuid();
 
 enum Category { food, travel, leisure, work }
+
 const categoryIcons = {
   Category.food: Icons.fastfood,
   Category.travel: Icons.flight,
@@ -27,4 +27,23 @@ class Expense {
   }) : id = uuid.v4();
 
   get formateddate => "${date.day}/${date.month}/${date.year}";
+}
+
+class ExpenseBucket {
+  final Category category;
+  final List<Expense> expenses;
+
+  ExpenseBucket.forCategory(List<Expense> allExpnses, this.category)
+    : expenses =
+          allExpnses.where((expense) => expense.category == category).toList();
+
+  const ExpenseBucket({required this.category, required this.expenses});
+
+  double get totalExpenses {
+    double sum = 0.0;
+    for (var expense in expenses) {
+      sum += expense.amount;
+    }
+    return sum;
+  }
 }

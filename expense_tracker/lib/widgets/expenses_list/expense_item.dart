@@ -6,24 +6,23 @@ class ExpenseItem extends StatelessWidget {
   const ExpenseItem({super.key, required this.expense});
   @override
   Widget build(context) {
-    return Card(                                                                                                             
+    return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(expense.title,style: TextStyle(fontWeight: FontWeight.bold),),
+            Text(expense.title, style: Theme.of(context).textTheme.titleLarge),
             SizedBox(height: 5),
             Row(
               children: [
                 Text("DZD ${expense.amount.toStringAsFixed(2)}"),
                 Spacer(),
                 Icon(categoryIcons[expense.category]),
-                                  SizedBox(width: 8),
-                                  Text(expense.formateddate)
+                SizedBox(width: 8),
+                Text(expense.formateddate),
               ],
             ),
-
           ],
         ),
       ),
