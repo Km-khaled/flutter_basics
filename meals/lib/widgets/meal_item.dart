@@ -23,7 +23,7 @@ class MealItem extends StatelessWidget {
   Widget build(context) {
     return Card(
       margin: const EdgeInsets.all(12),
-      shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       clipBehavior: Clip.hardEdge,
       elevation: 2,
       child: InkWell(
