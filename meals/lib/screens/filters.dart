@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 enum Filter { glutenFree, lactoseFree, vegetarian, vegan }
 
 class FiltersScreen extends StatefulWidget {
-  const FiltersScreen({super.key});
+   final Map<Filter, bool> selectedFilters;
+
+   const FiltersScreen({super.key, required this.selectedFilters});
   @override
   State<FiltersScreen> createState() => _FiltersScreenState();
 }
@@ -15,6 +17,16 @@ class _FiltersScreenState extends State<FiltersScreen> {
   var _lactoseFreeFilterSet = false;
   var _vegetarianFilterSet = false;
   var _veganFilterSet = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _glutenFreeFilterSet = widget.selectedFilters[Filter.glutenFree]!;
+    _lactoseFreeFilterSet = widget.selectedFilters[Filter.lactoseFree]!;
+    _vegetarianFilterSet = widget.selectedFilters[Filter.vegetarian]!;
+    _veganFilterSet = widget.selectedFilters[Filter.vegan]!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,13 +67,13 @@ class _FiltersScreenState extends State<FiltersScreen> {
               title: Text(
                 "Gluten-free",
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               subtitle: Text(
                 "Only include gluten-free meals",
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               activeColor: Theme.of(context).colorScheme.tertiary,
@@ -77,13 +89,13 @@ class _FiltersScreenState extends State<FiltersScreen> {
               title: Text(
                 "Lactose-free",
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               subtitle: Text(
                 "Only include Lactose-free meals",
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               activeColor: Theme.of(context).colorScheme.tertiary,
@@ -99,13 +111,13 @@ class _FiltersScreenState extends State<FiltersScreen> {
               title: Text(
                 "Vegetarian",
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               subtitle: Text(
                 "Only include vegetarian meals",
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               activeColor: Theme.of(context).colorScheme.tertiary,
@@ -121,13 +133,13 @@ class _FiltersScreenState extends State<FiltersScreen> {
               title: Text(
                 "Vegan",
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               subtitle: Text(
                 "Only include vegan meals",
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               activeColor: Theme.of(context).colorScheme.tertiary,
