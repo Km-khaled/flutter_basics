@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:favorite_places/models/place.dart';
 import 'package:favorite_places/providers/place_provider.dart';
+import 'package:favorite_places/widgets/image_input.dart';
+import 'package:favorite_places/widgets/location_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,12 +15,18 @@ class NewPlace extends ConsumerStatefulWidget {
 
 class _NewPlaceState extends ConsumerState<NewPlace> {
   final _enteredTitle = TextEditingController();
+  File? _pickedImage;
+  void _selectImage(File image) {
+    _pickedImage = image;
+  }
 
   void _savePlace() {
-    if (_enteredTitle.text.isEmpty || _enteredTitle.text.length <= 1) {
+    if (_enteredTitle.text.isEmpty ||
+        _enteredTitle.text.length <= 1 ||
+        _pickedImage == null) {
       return;
     }
-    final place = Place(title: _enteredTitle.text);
+    final place = Place(title: _enteredTitle.text, image: _pickedImage!);
     final wasAdded = ref.read(placesProvider.notifier).toggleplaces(place);
   }
 
@@ -60,7 +69,12 @@ class _NewPlaceState extends ConsumerState<NewPlace> {
                 ),
                 controller: _enteredTitle,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
+              ImageInput(_selectImage),
+              const SizedBox(height: 15),
+              LocationInput(),
+
+              const SizedBox(height: 15),
               ElevatedButton.icon(
                 onPressed: () {
                   _savePlace();
