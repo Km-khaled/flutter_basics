@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
 import 'package:http/http.dart' as http;
+import 'package:shopping_list/config/env_config.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 
 class NewItem extends StatefulWidget {
@@ -28,7 +29,7 @@ class _NewItemState extends State<NewItem> {
       final currentContext = context;
 
       final url = Uri.https(
-        'flutter-app-ec2b3-default-rtdb.firebaseio.com',
+        EnvConfig.firebaseDbUrl,
         'shopping-list.json',
       );
       final response = await http.post(

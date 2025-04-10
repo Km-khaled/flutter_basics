@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shopping_list/config/env_config.dart';
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/widgets/new_item.dart';
@@ -24,7 +25,7 @@ class _GroceryListState extends State<GroceryList> {
 
   void _loadItems() async {
     final url = Uri.https(
-      'flutter-app-ec2b3-default-rtdb.firebaseio.com',
+      EnvConfig.firebaseDbUrl,
       'shopping-list.json',
     );
     try {
@@ -90,7 +91,7 @@ class _GroceryListState extends State<GroceryList> {
     });
 
     final url = Uri.https(
-      'flutter-app-ec2b3-default-rtdb.firebaseio.com',
+      EnvConfig.firebaseDbUrl,
       'shopping-list/${item.id}.json',
     );
     final response = await http.delete(url);
