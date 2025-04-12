@@ -16,6 +16,8 @@ class NewPlace extends ConsumerStatefulWidget {
 class _NewPlaceState extends ConsumerState<NewPlace> {
   final _enteredTitle = TextEditingController();
   File? _pickedImage;
+  PlaceLocation? _pickedLocation;
+
   void _selectImage(File image) {
     _pickedImage = image;
   }
@@ -23,10 +25,11 @@ class _NewPlaceState extends ConsumerState<NewPlace> {
   void _savePlace() {
     if (_enteredTitle.text.isEmpty ||
         _enteredTitle.text.length <= 1 ||
-        _pickedImage == null) {
+        _pickedImage == null ||
+        _pickedLocation == null) {
       return;
     }
-    final place = Place(title: _enteredTitle.text, image: _pickedImage!);
+    final place = Place(title: _enteredTitle.text, image: _pickedImage!, location: _pickedLocation);
     final wasAdded = ref.read(placesProvider.notifier).toggleplaces(place);
   }
 
@@ -72,8 +75,9 @@ class _NewPlaceState extends ConsumerState<NewPlace> {
               const SizedBox(height: 15),
               ImageInput(_selectImage),
               const SizedBox(height: 15),
-              LocationInput(),
-
+              LocationInput(onSelectLocation: (location) {
+                _pickedLocation = location;
+              }),
               const SizedBox(height: 15),
               ElevatedButton.icon(
                 onPressed: () {
