@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'dart:io';
+import 'dart:async'; // Added import for TimeoutException
 import 'package:favorite_places/models/place.dart';
 import 'package:favorite_places/screens/map.dart';
 import 'package:flutter/material.dart';
@@ -52,12 +53,8 @@ class _LocationInputState extends State<LocationInput> {
     return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$lng&key=$apiKey';
   }
 
-  void _getCurrentLocation() async {
+  Future<void> _getCurrentLocation() async {
     Location location = Location();
-
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-    LocationData locationData;
 
     setState(() {
       _isGettingLocation = true;
@@ -65,40 +62,66 @@ class _LocationInputState extends State<LocationInput> {
 
     try {
       // Check if location services are enabled
-      serviceEnabled = await location.serviceEnabled();
+      final serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
-        if (!serviceEnabled) {
+        final serviceRequest = await location.requestService();
+        if (!serviceRequest) {
           setState(() {
             _isGettingLocation = false;
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location services are disabled')),
+            const SnackBar(
+              content: Text('Location services are disabled'),
+              duration: Duration(seconds: 2),
+            ),
           );
           return;
         }
       }
 
-      // Check for location permissions
-      permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
+      // Special handling for iOS permissions
+      var permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied || 
+          (Platform.isIOS && permissionGranted == PermissionStatus.deniedForever)) {
         permissionGranted = await location.requestPermission();
         if (permissionGranted != PermissionStatus.granted) {
           setState(() {
             _isGettingLocation = false;
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permission denied')),
+            SnackBar(
+              content: Text(
+                'Location permission ${permissionGranted.name}. Please enable location permissions in your device settings.',
+              ),
+              duration: Duration(seconds: 3),
+            ),
           );
           return;
         }
       }
 
-      // Get location data
-      locationData = await location.getLocation();
+      // Get location data with timeout for iOS
+      LocationData? locationData;
+      try {
+        locationData = await location.getLocation().timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            throw TimeoutException('Location request timed out. Please try again.');
+          },
+        );
+      } on TimeoutException catch (e) {
+        setState(() {
+          _isGettingLocation = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message ?? 'Location request timed out')),
+        );
+        return;
+      }
 
       final lat = locationData.latitude;
       final lng = locationData.longitude;
+      
       if (lat == null || lng == null) {
         setState(() {
           _isGettingLocation = false;
@@ -109,32 +132,44 @@ class _LocationInputState extends State<LocationInput> {
         return;
       }
 
+      // Set a temporary location immediately for better user experience
+      setState(() {
+        _pickedLocation = PlaceLocation(
+          latitude: lat,
+          longitude: lng,
+          address: 'Fetching address...',
+        );
+      });
+      widget.onSelectLocation(_pickedLocation!);
+
       // Get address from coordinates
       try {
-        _savePlace(lng, lat);
+        await _savePlace(lng, lat);
       } catch (error) {
-        setState(() {
-          _pickedLocation = PlaceLocation(
-            latitude: lat,
-            longitude: lng,
-            address: 'Address not available',
+        if (mounted) {  // Check if widget is still mounted
+          setState(() {
+            _pickedLocation = PlaceLocation(
+              latitude: lat,
+              longitude: lng,
+              address: 'Address not available',
+            );
+            _isGettingLocation = false;
+          });
+          widget.onSelectLocation(_pickedLocation!);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not get address: ${error.toString()}')),
           );
-          _isGettingLocation = false;
-        });
-
-        widget.onSelectLocation(_pickedLocation!);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not get address: ${error.toString()}')),
-        );
+        }
       }
     } catch (error) {
-      setState(() {
-        _isGettingLocation = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Location error: ${error.toString()}')),
-      );
+      if (mounted) {  // Check if widget is still mounted
+        setState(() {
+          _isGettingLocation = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Location error: ${error.toString()}')),
+        );
+      }
     }
   }
 
@@ -180,7 +215,7 @@ class _LocationInputState extends State<LocationInput> {
       );
     }
     if (_isGettingLocation) {
-      previewcontent = CircularProgressIndicator();
+      previewcontent = const CircularProgressIndicator();
     }
     return Column(
       children: [
@@ -200,14 +235,14 @@ class _LocationInputState extends State<LocationInput> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             TextButton.icon(
-              icon: Icon(Icons.location_on),
+              icon: const Icon(Icons.location_on),
               onPressed: _getCurrentLocation,
-              label: Text("Get Current Location"),
+              label: const Text("Get Current Location"),
             ),
             TextButton.icon(
-              icon: Icon(Icons.map),
+              icon: const Icon(Icons.map),
               onPressed: _selectOnMap,
-              label: Text("Select on Map"),
+              label: const Text("Select on Map"),
             ),
           ],
         ),

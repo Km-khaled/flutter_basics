@@ -19,9 +19,9 @@
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 		<string>We need your location to show nearby places.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
-		<string>We need your location to show nearby places.</string>
+			<string>This app needs access to location when in the background to save and display your favorite places.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>We need your location to show nearby places.</string>
+			<string>This app needs access to location when open to save and display your favorite places.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Pick Your favorite place image.</string>
 		<key>NSCameraUsageDescription</key>
@@ -71,5 +71,9 @@
 		<true />
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true />
+		<key>io.flutter.embedded_views_preview</key>
+		<true/>
+		<key>MGLMapboxMetricsEnabledSettingShownInApp</key>
+		<true/>
 	</dict>
 </plist>

@@ -21,9 +21,11 @@ final theme = ThemeData().copyWith(
 );
 
 void main() async {
-  // Load environment variables from .env file
+  WidgetsFlutterBinding.ensureInitialized();
+
   await dotenv.load(fileName: ".env");
-  runApp(ProviderScope(child: MyApp()));
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

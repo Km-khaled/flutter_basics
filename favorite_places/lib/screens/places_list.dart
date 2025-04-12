@@ -12,66 +12,122 @@ class PlacesListScreen extends ConsumerStatefulWidget {
 }
 
 class _PlacesListScreenState extends ConsumerState<PlacesListScreen> {
+  late Future<void> _placesFuture;
+  bool _isInit = false;
+  
+  @override
+  void initState() {
+    super.initState();
+    _placesFuture = ref.read(placesProvider.notifier).loadPlaces();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (!_isInit) {
+      _refreshPlaces();
+      _isInit = true;
+    }
+    super.didChangeDependencies();
+  }
+  
+  Future<void> _refreshPlaces() async {
+    setState(() {
+      _placesFuture = ref.read(placesProvider.notifier).loadPlaces();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget content = Center(
-      child: Text(
-        "No placess added yet",
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onBackground,
-          fontSize: 20,
-        ),
-      ),
-    );
     final places = ref.watch(placesProvider);
 
-    if (places.isNotEmpty) {
-      content = ListView.builder(
-        itemCount: places.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: CircleAvatar(
-              radius: 26,
-              backgroundImage: FileImage(places[index].image!),
-            ),
-            title: Text(
-              places[index].title,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-            ),
-            subtitle: Text(
-              places[index].location!.address,
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-            ),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => PlacesDetails(place: places[index]),
-                ),
-              );
-            },
-          );
-        },
-      );
-    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Places'),
         actions: [
           IconButton(
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (ctx) => NewPlace()));
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => const NewPlace())
+              );
+              // Refresh places list when coming back from NewPlace screen
+              _refreshPlaces();
             },
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
           ),
         ],
       ),
-      body: content,
+      body: FutureBuilder(
+        future: _placesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'An error occurred: ${snapshot.error}',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 16,
+                ),
+              ),
+            );
+          }
+          
+          if (places.isEmpty) {
+            return Center(
+              child: Text(
+                "No places added yet",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 20,
+                ),
+              ),
+            );
+          }
+          
+          // Show the list of places
+          return ListView.builder(
+            itemCount: places.length,
+            itemBuilder: (context, index) {
+              final place = places[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                elevation: 2,
+                child: ListTile(
+                  leading: Hero(
+                    tag: place.id,
+                    child: CircleAvatar(
+                      radius: 26,
+                      backgroundImage: FileImage(place.image!),
+                    ),
+                  ),
+                  title: Text(
+                    place.title,
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                  ),
+                  subtitle: Text(
+                    place.location!.address,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => PlacesDetails(place: place),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

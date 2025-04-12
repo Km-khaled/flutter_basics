@@ -23,14 +23,46 @@ class _NewPlaceState extends ConsumerState<NewPlace> {
   }
 
   void _savePlace() {
+    // Check if all required fields are filled
     if (_enteredTitle.text.isEmpty ||
         _enteredTitle.text.length <= 1 ||
         _pickedImage == null ||
         _pickedLocation == null) {
-      return;
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(
+            'Error',
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+          content: Text(
+            'Please provide a valid title, image, and location.',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Okay'),
+            ),
+          ],
+        ),
+      );
+      return; 
     }
-    final place = Place(title: _enteredTitle.text, image: _pickedImage!, location: _pickedLocation);
-    final wasAdded = ref.read(placesProvider.notifier).toggleplaces(place);
+    
+    final place = Place(
+      title: _enteredTitle.text,
+      image: _pickedImage!,
+      location: _pickedLocation,
+    );
+    ref.read(placesProvider.notifier).toggleplaces(place);
+    
+    // Return to previous screen after saving
+    Navigator.of(context).pop();
   }
 
   @override
@@ -75,14 +107,15 @@ class _NewPlaceState extends ConsumerState<NewPlace> {
               const SizedBox(height: 15),
               ImageInput(_selectImage),
               const SizedBox(height: 15),
-              LocationInput(onSelectLocation: (location) {
-                _pickedLocation = location;
-              }),
+              LocationInput(
+                onSelectLocation: (location) {
+                  _pickedLocation = location;
+                },
+              ),
               const SizedBox(height: 15),
               ElevatedButton.icon(
                 onPressed: () {
                   _savePlace();
-                  Navigator.of(context).pop();
                 },
                 label: Text("Add Place"),
                 icon: Icon(

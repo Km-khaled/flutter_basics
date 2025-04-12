@@ -1,6 +1,7 @@
 import 'package:favorite_places/models/place.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:io' show Platform;
 
 class MapScreen extends StatefulWidget {
   final PlaceLocation? location;
@@ -22,6 +23,31 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   LatLng? _pickedLocation;
+  Set<Marker> _markers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _updateMarkers();
+  }
+
+  void _updateMarkers() {
+    final markerPosition = _pickedLocation ?? 
+        LatLng(
+          widget.location!.latitude,
+          widget.location!.longitude,
+        );
+        
+    setState(() {
+      _markers = {
+        Marker(
+          markerId: const MarkerId('m1'),
+          position: markerPosition,
+        ),
+      };
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,38 +60,51 @@ class _MapScreenState extends State<MapScreen> {
             IconButton(
               icon: const Icon(Icons.save),
               onPressed: () {
-                Navigator.of(context).pop(_pickedLocation);
+                Navigator.of(context).pop(
+                  _pickedLocation ?? 
+                  LatLng(
+                    widget.location!.latitude,
+                    widget.location!.longitude,
+                  )
+                );
               },
             ),
         ],
       ),
       body: GoogleMap(
-        onTap:
-            !widget.isSelecting
-                ? null
-                : (position) {
-                  setState(() {
-                    _pickedLocation = position;
-                  });
-                },
+        myLocationEnabled: true,
+        myLocationButtonEnabled: true,
+        onTap: !widget.isSelecting
+            ? null
+            : (position) {
+                setState(() {
+                  _pickedLocation = position;
+                  _updateMarkers();
+                });
+              },
         initialCameraPosition: CameraPosition(
-          target: LatLng(widget.location!.latitude, widget.location!.longitude),
+          target: LatLng(
+            widget.location!.latitude, 
+            widget.location!.longitude
+          ),
           zoom: 16,
         ),
-        markers:
-            (_pickedLocation == null && widget.isSelecting)
-                ? {}
-                : {
-                  Marker(
-                    markerId: const MarkerId('m1'),
-                    position:
-                        _pickedLocation ??
-                        LatLng(
-                          widget.location!.latitude,
-                          widget.location!.longitude,
-                        ),
+        markers: _markers,
+        onMapCreated: (controller) {
+          // This ensures the map is properly initialized on iOS
+          if (Platform.isIOS) {
+            Future.delayed(const Duration(milliseconds: 100), () {
+              controller.animateCamera(
+                CameraUpdate.newLatLng(
+                  LatLng(
+                    widget.location!.latitude,
+                    widget.location!.longitude,
                   ),
-                },
+                ),
+              );
+            });
+          }
+        },
       ),
     );
   }
