@@ -10,6 +10,12 @@
 			<string>remote-notification</string>
 			<string>voip</string>
 		</array>
+		<key>NSBonjourServices</key>
+		<array>
+			<string>_dartVmService._tcp</string>
+		</array>
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>This app needs access to the local network for debugging purposes</string>
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 		<string>We need your location to show nearby places.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
