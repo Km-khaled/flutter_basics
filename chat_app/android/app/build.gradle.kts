@@ -27,7 +27,7 @@ android {
         applicationId = "com.example.chat_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23  // Updated from flutter.minSdkVersion to fix firebase_auth compatibility
+        minSdk = 23 // Updated from flutter.minSdkVersion to support firebase_auth
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

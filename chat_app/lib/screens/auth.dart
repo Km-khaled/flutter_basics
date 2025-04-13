@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -12,15 +15,31 @@ class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
   var _enteredEmail = '';
   var _enteredPassword = '';
-  void _submit() {
+
+  void _submit() async {
     final isValid = _formKey.currentState?.validate() ?? false;
-    if (isValid) {
-      // Handle the form submission
-      _formKey.currentState?.save();
-      print('Email: $_enteredEmail');
-      print('Password: $_enteredPassword');
+    if (!isValid) {
+      return;
+    }
+    _formKey.currentState?.save();
+
+    if (_isLogin) {
+    } else {
+      try {
+        final userCredential = await _firebase.createUserWithEmailAndPassword(
+          email: _enteredEmail,
+          password: _enteredPassword,
+        );
+        print(userCredential);
+      } on FirebaseAuthException catch (error) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.message ?? 'Authentication failed')),
+        );
+      }
     }
   }
+
   @override
   Widget build(context) {
     return Scaffold(
@@ -58,16 +77,18 @@ class _AuthScreenState extends State<AuthScreen> {
                             keyboardType: TextInputType.emailAddress,
                             autocorrect: false,
                             textCapitalization: TextCapitalization.none,
-                            validator: (value){
+                            validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter a valid email address.';
                               }
-                              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+                              if (!RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                              ).hasMatch(value)) {
                                 return 'Please enter a valid email address.';
                               }
                               return null;
                             },
-                            onSaved: (value){
+                            onSaved: (value) {
                               _enteredEmail = value!;
                             },
                           ),
@@ -85,16 +106,18 @@ class _AuthScreenState extends State<AuthScreen> {
                               }
                               return null;
                             },
-                            onSaved:(value){
-                                _enteredPassword=value!;
-                            } ,
+                            onSaved: (value) {
+                              _enteredPassword = value!;
+                            },
                           ),
                           const SizedBox(height: 12),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
-                                  Theme.of(context).colorScheme.primaryContainer,
-                            ), 
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                            ),
                             onPressed: () {
                               _submit();
                             },
