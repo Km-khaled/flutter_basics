@@ -22,21 +22,26 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
     _formKey.currentState?.save();
-
-    if (_isLogin) {
-    } else {
-      try {
-        final userCredential = await _firebase.createUserWithEmailAndPassword(
+    final userCredential;
+    try {
+      if (_isLogin) {
+        userCredential = await _firebase.signInWithEmailAndPassword(
           email: _enteredEmail,
           password: _enteredPassword,
         );
-        print(userCredential);
-      } on FirebaseAuthException catch (error) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.message ?? 'Authentication failed')),
+      } else {
+        userCredential = await _firebase.createUserWithEmailAndPassword(
+          email: _enteredEmail,
+          password: _enteredPassword,
         );
       }
+
+      print(userCredential);
+    } on FirebaseAuthException catch (error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message ?? 'Authentication failed')),
+      );
     }
   }
 
