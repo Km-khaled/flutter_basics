@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class Pageone extends StatelessWidget {
-  final controller = Get.put(Homecontroller(), permanent: true);
+  final controller = Get.find<Homecontroller>();
 
   Pageone({super.key});
 
@@ -28,7 +28,6 @@ class Pageone extends StatelessWidget {
                   label: const Text(''),
                 ),
                 GetBuilder<Homecontroller>(
-                  init: Homecontroller(),
                   builder: (controller) {
                     return Text(
                       "${controller.counter.value}",

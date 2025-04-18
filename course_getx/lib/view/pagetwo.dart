@@ -1,8 +1,10 @@
+import 'package:course_getx/controller/homecontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class PageTwo extends StatelessWidget {
-  const PageTwo({super.key});
+  PageTwo({super.key});
+  final controller = Get.find<Homecontroller>();
 
   @override
   Widget build(BuildContext context) {
@@ -14,22 +16,14 @@ class PageTwo extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                Get.offNamed("/pageone");
+            GetBuilder<Homecontroller>(
+              builder: (controller) {
+                return Text(
+                  "${controller.counter.value}",
+                  style: const TextStyle(fontSize: 30),
+                );
               },
-              child: const Text('Page One'),
             ),
-
-            ElevatedButton(
-              onPressed: () {
-                Get.offNamed("/pagethree");
-              },
-              child: const Text('Page Three'),
-            ),
-            ElevatedButton(onPressed: () {
-              Get.back();
-            }, child: const Text('Back')),
           ],
         ),
       ),

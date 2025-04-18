@@ -1,3 +1,4 @@
+import 'package:course_getx/utils/home_binding.dart';
 import 'package:course_getx/view/home.dart';
 import 'package:course_getx/view/pageOne.dart';
 import 'package:course_getx/view/pagethree.dart';
@@ -15,13 +16,14 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      initialBinding: HomeBinding(),
       getPages: [
         GetPage(name: "/", page: () => HomeScreen()),
-        GetPage(name: "/pageone", page: () => Pageone()),
-        GetPage(name: "/pagetwo", page: () => const PageTwo()),
-        GetPage(name: "/pagethree", page: () => const PageThree()),
+        GetPage(name: "/pageone", page: () => Pageone(),),
+        GetPage(name: "/pagetwo", page: () => PageTwo()),
+        GetPage(name: "/pagethree", page: () => PageThree()),
       ],
-      home: const HomeScreen(),
+      home: HomeScreen(),
     );
   }
 }
