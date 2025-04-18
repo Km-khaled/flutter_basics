@@ -1,3 +1,4 @@
+import 'package:course_getx/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,6 +33,13 @@ class HomeScreen extends StatelessWidget {
                 Get.toNamed("/pagethree");
               },
               child: const Text('Page Three'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                sharedPref!.clear(); // Only remove the ID used in login
+                Get.offAllNamed("/");
+              },
+              child: const Text('Logout'),
             ),
           ],
         ),
