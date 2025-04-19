@@ -1,5 +1,6 @@
 import 'package:course_getx/middleware/auth_middleware.dart';
 import 'package:course_getx/middleware/super_middleware.dart';
+import 'package:course_getx/services/setting_services.dart';
 import 'package:course_getx/utils/home_binding.dart';
 import 'package:course_getx/view/admin.dart';
 import 'package:course_getx/view/home.dart';
@@ -10,14 +11,15 @@ import 'package:course_getx/view/pagetwo.dart';
 import 'package:course_getx/view/super.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-SharedPreferences? sharedPref;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  sharedPref = await SharedPreferences.getInstance();
+  await initialService();
   runApp(const MainApp());
+}
+
+Future initialService() async {
+  await Get.putAsync(() => SettingServices().init());
 }
 
 class MainApp extends StatelessWidget {
@@ -30,18 +32,13 @@ class MainApp extends StatelessWidget {
 
       initialBinding: HomeBinding(),
       getPages: [
-        GetPage(
-          name: "/",
-          page: () =>  Login(),
-          middlewares: [AuthMiddleware(),SuperMiddleware()],
-        ),
-        GetPage(name: "/home", page: () => HomeScreen()),
-        GetPage(name: "/pageone", page: () => Pageone()),
-        GetPage(name: "/pagetwo", page: () => PageTwo()),
-        GetPage(name: "/pagethree", page: () => PageThree()),
-        GetPage(name: "/admin", page: () => Admin()),
-        GetPage(name: "/super", page: () => Super()),
-        
+        GetPage(name: "/", page: () => HomeScreen()),
+        // GetPage(name: "/home", page: () => HomeScreen()),
+        // GetPage(name: "/pageone", page: () => Pageone()),
+        // GetPage(name: "/pagetwo", page: () => PageTwo()),
+        // GetPage(name: "/pagethree", page: () => PageThree()),
+        // GetPage(name: "/admin", page: () => Admin()),
+        // GetPage(name: "/super", page: () => Super()),
       ],
     );
   }

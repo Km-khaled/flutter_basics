@@ -1,8 +1,9 @@
 import 'package:course_getx/main.dart';
+import 'package:course_getx/services/setting_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends GetView<SettingServices> {
   const HomeScreen({super.key});
 
   @override
@@ -16,31 +17,46 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                Get.toNamed("/pageone");
-              },
-              child: const Text('Page One'),
+            GetX<SettingServices>(
+              builder: (c) => Center(child: Text("${c.counter}")),
             ),
             ElevatedButton(
               onPressed: () {
-                Get.toNamed("/pagetwo");
+                controller.increase();
               },
-              child: const Text('Page Two'),
+              child: const Text('Increment'),
             ),
             ElevatedButton(
               onPressed: () {
-                Get.toNamed("/pagethree");
+                controller.sharedPref.clear();
               },
-              child: const Text('Page Three'),
+              child: const Text('Clear Counter'),
             ),
-            ElevatedButton(
-              onPressed: () {
-                sharedPref!.clear(); // Only remove the ID used in login
-                Get.offAllNamed("/");
-              },
-              child: const Text('Logout'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Get.toNamed("/pageone");
+            //   },
+            //   child: const Text('Page One'),
+            // ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Get.toNamed("/pagetwo");
+            //   },
+            //   child: const Text('Page Two'),
+            // ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Get.toNamed("/pagethree");
+            //   },
+            //   child: const Text('Page Three'),
+            // ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     sharedPref!.clear(); // Only remove the ID used in login
+            //     Get.offAllNamed("/");
+            //   },
+            //   child: const Text('Logout'),
+            // ),
           ],
         ),
       ),
