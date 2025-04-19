@@ -1,3 +1,5 @@
+import 'package:course_getx/locale/locale.dart';
+import 'package:course_getx/locale/locale_controller.dart';
 import 'package:course_getx/middleware/auth_middleware.dart';
 import 'package:course_getx/middleware/super_middleware.dart';
 import 'package:course_getx/services/setting_services.dart';
@@ -11,25 +13,31 @@ import 'package:course_getx/view/pagetwo.dart';
 import 'package:course_getx/view/super.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+late SharedPreferences sharedPref;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initialService();
+  sharedPref = await SharedPreferences.getInstance();
+
   runApp(const MainApp());
 }
 
-Future initialService() async {
-  await Get.putAsync(() => SettingServices().init());
-}
+// Future initialService() async {
+//   await Get.putAsync(() => SettingServices().init());
+// }
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    LocaleController controller = Get.put(LocaleController());
     return GetMaterialApp(
       initialRoute: '/',
-
+      locale: controller.initialLang,
+      translations: MyLocale(),
       initialBinding: HomeBinding(),
       getPages: [
         GetPage(name: "/", page: () => HomeScreen()),

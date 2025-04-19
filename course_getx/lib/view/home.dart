@@ -1,3 +1,4 @@
+import 'package:course_getx/locale/locale_controller.dart';
 import 'package:course_getx/main.dart';
 import 'package:course_getx/services/setting_services.dart';
 import 'package:flutter/material.dart';
@@ -8,29 +9,27 @@ class HomeScreen extends GetView<SettingServices> {
 
   @override
   Widget build(BuildContext context) {
-    print("build home screen");
+    LocaleController lngController = Get.find<LocaleController>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Home ')),
+      appBar: AppBar(title: Text("1".tr)),
       body: Container(
         alignment: Alignment.center,
         padding: EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GetX<SettingServices>(
-              builder: (c) => Center(child: Text("${c.counter}")),
-            ),
             ElevatedButton(
               onPressed: () {
-                controller.increase();
+                lngController.changeLocale("ar");
               },
-              child: const Text('Increment'),
+              child: Text("2".tr),
             ),
+            SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                controller.sharedPref.clear();
+                lngController.changeLocale("en");
               },
-              child: const Text('Clear Counter'),
+              child: Text("3".tr),
             ),
             // ElevatedButton(
             //   onPressed: () {
