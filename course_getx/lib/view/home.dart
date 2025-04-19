@@ -1,5 +1,5 @@
+import 'package:course_getx/controller/theme_controller.dart';
 import 'package:course_getx/locale/locale_controller.dart';
-import 'package:course_getx/main.dart';
 import 'package:course_getx/services/setting_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,6 +10,8 @@ class HomeScreen extends GetView<SettingServices> {
   @override
   Widget build(BuildContext context) {
     LocaleController lngController = Get.find<LocaleController>();
+    ThemeController themeController = Get.find<ThemeController>();
+    
     return Scaffold(
       appBar: AppBar(title: Text("1".tr)),
       body: Container(
@@ -31,31 +33,43 @@ class HomeScreen extends GetView<SettingServices> {
               },
               child: Text("3".tr),
             ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Get.toNamed("/pageone");
-            //   },
-            //   child: const Text('Page One'),
-            // ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Get.toNamed("/pagetwo");
-            //   },
-            //   child: const Text('Page Two'),
-            // ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Get.toNamed("/pagethree");
-            //   },
-            //   child: const Text('Page Three'),
-            // ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     sharedPref!.clear(); // Only remove the ID used in login
-            //     Get.offAllNamed("/");
-            //   },
-            //   child: const Text('Logout'),
-            // ),
+            
+            // Theme switching buttons
+            SizedBox(height: 20),
+            Text(
+              'Theme Options:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            
+            // Current theme indicator
+            Obx(() => Text(
+              'Current Theme: ${themeController.themeMode.value == ThemeMode.light ? "Light" : "Dark"}',
+              style: TextStyle(fontSize: 16),
+            )),
+            SizedBox(height: 10),
+            
+            // Light Theme Button
+            ElevatedButton(
+              onPressed: () {
+                if (themeController.themeMode.value != ThemeMode.light) {
+                  themeController.switchTheme();
+                }
+              },
+              child: const Text('Switch to Light Theme'),
+            ),
+            
+            SizedBox(height: 10),
+            
+            // Dark Theme Button
+            ElevatedButton(
+              onPressed: () {
+                if (themeController.themeMode.value != ThemeMode.dark) {
+                  themeController.switchTheme();
+                }
+              },
+              child: const Text('Switch to Dark Theme'),
+            ),
           ],
         ),
       ),

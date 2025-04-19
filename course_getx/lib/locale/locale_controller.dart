@@ -5,13 +5,13 @@ import 'package:course_getx/services/setting_services.dart';
 
 class LocaleController extends GetxController {
   Locale initialLang =
-      sharedPref.getString("lang") == null
+      sharedPref!.getString("lang") == null
           ? Locale(Get.deviceLocale.toString())
-          : Locale(sharedPref.getString("lang")!);
+          : Locale(sharedPref!.getString("lang")!);
 
   void changeLocale(String langCode) {
     Locale locale = Locale(langCode);
-    sharedPref.setString("lang", langCode);
+    sharedPref!.setString("lang", langCode);
 
     Get.updateLocale(locale);
   }
